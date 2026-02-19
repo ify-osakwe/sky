@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import github.com.ifyosakwe.sky.exception.BadRequestException;
-import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherResponse;
+import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
 import github.com.ifyosakwe.sky.models.dto.response.ForecastItemResponse;
 import github.com.ifyosakwe.sky.service.WeatherService;
 
@@ -29,7 +29,7 @@ public class WeatherApiController {
      * - Legacy flow: ?city={cityName}
      */
     @GetMapping("/current")
-    public ResponseEntity<CurrentWeatherResponse> getCurrentWeather(
+    public ResponseEntity<CurrentWeatherApiResponse> getCurrentWeather(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String lat,
             @RequestParam(required = false) String lon,
@@ -38,13 +38,13 @@ public class WeatherApiController {
         if (lat != null && lon != null && city != null && country != null) {
             double latitude = Double.parseDouble(lat);
             double longitude = Double.parseDouble(lon);
-            CurrentWeatherResponse response = weatherService.getCurrentWeather(
+            CurrentWeatherApiResponse response = weatherService.getCurrentWeather(
                     latitude, longitude, city, country);
             return ResponseEntity.ok(response);
         }
 
         if (city != null && !city.isBlank()) {
-            CurrentWeatherResponse response = weatherService.getCurrentWeather(city);
+            CurrentWeatherApiResponse response = weatherService.getCurrentWeather(city);
             return ResponseEntity.ok(response);
         }
 

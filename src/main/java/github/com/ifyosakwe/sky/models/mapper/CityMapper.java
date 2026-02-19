@@ -1,5 +1,6 @@
 package github.com.ifyosakwe.sky.models.mapper;
 
+import github.com.ifyosakwe.sky.models.dto.CityDto;
 import github.com.ifyosakwe.sky.models.dto.openweather.GeocodingResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
 import github.com.ifyosakwe.sky.models.entity.City;
@@ -13,7 +14,7 @@ public class CityMapper {
     /**
      * Convert GeocodingResponse to City entity.
      */
-    public City toCity(GeocodingResponse dto) {
+    public City toCityEntity(GeocodingResponse dto) {
         City city = new City();
         city.setName(dto.getName());
         city.setCountry(dto.getCountry());
@@ -27,7 +28,7 @@ public class CityMapper {
      * Convert WeatherResponse (current weather) to City entity.
      * Useful when you get city data from the weather response.
      */
-    public City toCity(WeatherResponse dto) {
+    public City toCityEntity(WeatherResponse dto) {
         City city = new City();
         city.setName(dto.name);
 
@@ -42,5 +43,15 @@ public class CityMapper {
 
         city.setSearchCount(0);
         return city;
+    }
+
+    public CityDto toCityDto(GeocodingResponse dto) {
+        return new CityDto(
+                dto.getName(),
+                dto.getState(),
+                dto.getCountry(),
+                dto.getLatitude(),
+                dto.getLongitude(),
+                null);
     }
 }

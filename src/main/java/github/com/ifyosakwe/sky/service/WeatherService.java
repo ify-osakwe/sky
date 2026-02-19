@@ -1,14 +1,16 @@
 package github.com.ifyosakwe.sky.service;
 
 import github.com.ifyosakwe.sky.exception.CityNotFoundException;
+import github.com.ifyosakwe.sky.models.dto.CityDto;
 import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.GeocodingResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
-import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherResponse;
+import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
 import github.com.ifyosakwe.sky.models.dto.response.ForecastItemResponse;
 import github.com.ifyosakwe.sky.models.entity.City;
 import github.com.ifyosakwe.sky.models.entity.CurrentWeather;
 import github.com.ifyosakwe.sky.models.entity.Forecast;
+import github.com.ifyosakwe.sky.models.mapper.CityMapper;
 import github.com.ifyosakwe.sky.models.mapper.WeatherMapper;
 import github.com.ifyosakwe.sky.repository.CurrentWeatherRepository;
 import github.com.ifyosakwe.sky.repository.ForecastRepository;
@@ -27,17 +29,20 @@ public class WeatherService {
     private final CurrentWeatherRepository currentWeatherRepository;
     private final ForecastRepository forecastRepository;
     private final WeatherMapper weatherMapper;
+    private final CityMapper cityMapper;
 
     public WeatherService(OpenWeatherMapService openWeatherMapService,
             CityService cityService,
             CurrentWeatherRepository currentWeatherRepository,
             ForecastRepository forecastRepository,
-            WeatherMapper weatherMapper) {
+            WeatherMapper weatherMapper,
+            CityMapper cityMapper) {
         this.openWeatherMapService = openWeatherMapService;
         this.cityService = cityService;
         this.currentWeatherRepository = currentWeatherRepository;
         this.forecastRepository = forecastRepository;
         this.weatherMapper = weatherMapper;
+        this.cityMapper = cityMapper;
     }
 
     /**
@@ -46,11 +51,39 @@ public class WeatherService {
      * persists the result, and returns a response DTO.
      */
     @Transactional
-    public CurrentWeatherResponse getCurrentWeather(String cityName) {
+    public CurrentWeatherApiResponse getCurrentWeather(String cityName) {
         City city = resolveCity(cityName);
         cityService.incrementSearchCount(city.getId());
 
         return fetchAndCacheCurrentWeather(city);
+    }
+
+    @Transactional
+    public CurrentWeatherApiResponse xGetCurrentWeather(CityDto cityDto) {
+        Optional<City> cityDB = cityService.xFindByNameAndCountry(
+                cityDto.getName(), cityDto.getCountry());
+        if (cityDB.isPresent() && isFresh(cityDB.get().getCurrentWeather().getLastUpdated())) {
+            cityService.incrementSearchCount(cityDB.get().getId());
+            return weatherMapper.toCurrentWeatherResponse(cityDB.get());
+        }
+
+        City city = cityService.xFindOrCreateCity(cityDto);
+        Optional<CurrentWeather> weatherDB = currentWeatherRepository.findByCityId(city.getId());
+        if (weatherDB.isPresent() && isFresh(weatherDB.get().getLastUpdated())) {
+            cityService.incrementSearchCount(city.getId());
+            return weatherMapper.toCurrentWeatherResponse(weatherDB.get(), city);
+        }
+
+        WeatherResponse weatherResponse = openWeatherMapService.fetchCurrentWeather(
+                cityDto.getLatitude(),
+                cityDto.getLongitude());
+        CurrentWeather weather = weatherMapper.toCurrentWeather(weatherResponse, city);
+
+        if (weatherDB.isPresent()) {
+            weather.setId(weatherDB.get().getId());
+        }
+        currentWeatherRepository.save(weather);
+        return weatherMapper.toCurrentWeatherResponse(weather, city);
     }
 
     /**
@@ -59,7 +92,7 @@ public class WeatherService {
      * coordinates. The city is resolved by name+country (or created if new).
      */
     @Transactional
-    public CurrentWeatherResponse getCurrentWeather(double lat, double lon,
+    public CurrentWeatherApiResponse getCurrentWeather(double lat, double lon,
             String cityName, String country) {
         City city = cityService.findOrCreateCity(cityName, country, lat, lon);
         cityService.incrementSearchCount(city.getId());
@@ -116,7 +149,7 @@ public class WeatherService {
 
     // ---- Private helpers ----
 
-    private CurrentWeatherResponse fetchAndCacheCurrentWeather(City city) {
+    private CurrentWeatherApiResponse fetchAndCacheCurrentWeather(City city) {
         Optional<CurrentWeather> existing = currentWeatherRepository.findByCityId(city.getId());
         if (existing.isPresent() && isFresh(existing.get().getLastUpdated())) {
             return weatherMapper.toCurrentWeatherResponse(existing.get(), city);

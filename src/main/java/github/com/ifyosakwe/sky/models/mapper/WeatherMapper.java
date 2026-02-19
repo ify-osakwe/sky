@@ -2,7 +2,7 @@ package github.com.ifyosakwe.sky.models.mapper;
 
 import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
-import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherResponse;
+import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
 import github.com.ifyosakwe.sky.models.dto.response.ForecastItemResponse;
 import github.com.ifyosakwe.sky.models.entity.City;
 import github.com.ifyosakwe.sky.models.entity.CurrentWeather;
@@ -46,6 +46,38 @@ public class WeatherMapper {
         return weather;
     }
 
+    /*public CurrentWeather toCurrentWeather(WeatherResponse weatherResponse) {
+        CurrentWeather weather = new CurrentWeather();
+        weather.setCity(weatherResponse.city);
+        weather.setTimestamp(LocalDateTime.ofInstant(Instant.ofEpochSecond(weatherResponse.dt), ZoneOffset.UTC));
+        weather.setTemperature(weatherResponse.main.temp);
+        weather.setHumidity(weatherResponse.main.humidity);
+        weather.setPressure(weatherResponse.main.pressure);
+
+        if (weatherResponse.wind != null) {
+            weather.setWindSpeed(weatherResponse.wind.speed);
+            weather.setWindDirection(weatherResponse.wind.direction);
+        }
+
+        if (weatherResponse.weather != null && !weatherResponse.weather.isEmpty()) {
+            weather.setWeatherMain(weatherResponse.weather.get(0).main);
+            weather.setWeatherDescription(weatherResponse.weather.get(0).description);
+        }
+
+        if (weatherResponse.sys != null) {
+            weather.setSunrise(
+                    LocalDateTime.ofInstant(Instant.ofEpochSecond(weatherResponse.sys.sunrise),
+                            ZoneOffset.UTC));
+            weather.setSunset(
+                    LocalDateTime.ofInstant(Instant.ofEpochSecond(weatherResponse.sys.sunset),
+                            ZoneOffset.UTC));
+        }
+
+        weather.setLastUpdated(LocalDateTime.now());
+
+        return weather;
+    }*/
+
     public List<Forecast> toForecasts(ForecastResponse dto, City city) {
         List<Forecast> forecasts = new ArrayList<>();
 
@@ -83,8 +115,8 @@ public class WeatherMapper {
         return forecasts;
     }
 
-    public CurrentWeatherResponse toCurrentWeatherResponse(CurrentWeather weather, City city) {
-        return new CurrentWeatherResponse(
+    public CurrentWeatherApiResponse toCurrentWeatherResponse(CurrentWeather weather, City city) {
+        return new CurrentWeatherApiResponse(
                 city.getName(),
                 city.getCountry(),
                 weather.getTemperature(),
@@ -97,6 +129,22 @@ public class WeatherMapper {
                 weather.getSunrise(),
                 weather.getSunset(),
                 weather.getLastUpdated());
+    }
+
+    public CurrentWeatherApiResponse toCurrentWeatherResponse(City city) {
+        return new CurrentWeatherApiResponse(
+                city.getName(),
+                city.getCountry(),
+                city.getCurrentWeather().getTemperature(),
+                city.getCurrentWeather().getHumidity(),
+                city.getCurrentWeather().getPressure(),
+                city.getCurrentWeather().getWindSpeed(),
+                city.getCurrentWeather().getWindDirection(),
+                city.getCurrentWeather().getWeatherMain(),
+                city.getCurrentWeather().getWeatherDescription(),
+                city.getCurrentWeather().getSunrise(),
+                city.getCurrentWeather().getSunset(),
+                city.getCurrentWeather().getLastUpdated());
     }
 
     public ForecastItemResponse toForecastItemResponse(Forecast forecast) {

@@ -52,7 +52,8 @@ public class CityApiController {
                         geo.getState(),
                         geo.getCountry(),
                         geo.getLatitude(),
-                        geo.getLongitude()))
+                        geo.getLongitude(),
+                        null))
                 .toList();
 
         return ResponseEntity.ok(cityDtos);
