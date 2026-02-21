@@ -49,7 +49,7 @@ public class WeatherService {
     }
 
     @Transactional
-    public CurrentWeatherApiResponse xGetCurrentWeather(CityDto cityDto) {
+    public CurrentWeatherApiResponse getCurrentWeather(CityDto cityDto) {
         Optional<City> cityDB = cityService.findByNameAndCountry(
                 cityDto.getName(), cityDto.getCountry());
         if (cityDB.isPresent() && isFresh(cityDB.get().getCurrentWeather().getLastUpdated())) {
@@ -77,7 +77,7 @@ public class WeatherService {
     }
 
     @Transactional
-    public List<ForecastItemResponse> xGetForecast(CityDto cityDto) {
+    public List<ForecastItemResponse> getForecast(CityDto cityDto) {
         Optional<City> cityDB = cityService.findByNameAndCountry(
                 cityDto.getName(), cityDto.getCountry());
         if (cityDB.isPresent()) {

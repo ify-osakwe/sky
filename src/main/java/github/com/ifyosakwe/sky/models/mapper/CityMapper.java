@@ -51,7 +51,8 @@ public class CityMapper {
                 dto.getState(),
                 dto.getCountry(),
                 dto.getLatitude(),
-                dto.getLongitude(),
-                null);
+                dto.getLongitude());
     }
+
+    
 }
