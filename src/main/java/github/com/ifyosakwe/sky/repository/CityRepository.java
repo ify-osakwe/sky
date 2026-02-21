@@ -28,14 +28,6 @@ public interface CityRepository extends JpaRepository<City, Long> {
     List<City> findByLastSearchedIsNotNull(Pageable pageable);
 
     /**
-     * Find a city by name (case-insensitive).
-     * SELECT * FROM cities
-     * WHERE LOWER(name) = LOWER(:name)
-     * LIMIT 1;
-     */
-    Optional<City> findByNameIgnoreCase(String name);
-
-    /**
      * Find cities whose name contains the search term (for autocomplete).
      * SELECT * FROM cities
      * WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name, '%'));

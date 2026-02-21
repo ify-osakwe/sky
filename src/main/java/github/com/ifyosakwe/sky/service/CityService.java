@@ -1,5 +1,8 @@
 package github.com.ifyosakwe.sky.service;
 
+import github.com.ifyosakwe.sky.exception.BadRequestException;
+import github.com.ifyosakwe.sky.exception.CityNotFoundException;
+import github.com.ifyosakwe.sky.exception.WeatherApiException;
 import github.com.ifyosakwe.sky.models.dto.CityDto;
 import github.com.ifyosakwe.sky.models.dto.openweather.GeocodingResponse;
 import github.com.ifyosakwe.sky.models.entity.City;
@@ -30,17 +33,30 @@ public class CityService {
         this.cityMapper = cityMapper;
     }
 
-    public List<CityDto> xGetCities(String city) {
-        List<GeocodingResponse> geocodingResponses = openWeatherMapService.searchCities(city);
+    public List<CityDto> getCities(String city) {
+        if (city == null || city.isBlank()) {
+            throw new BadRequestException("City name cannot be empty");
+        }
+
+        List<GeocodingResponse> geocodingResponses;
+        try {
+            geocodingResponses = openWeatherMapService.searchCities(city);
+        } catch (Exception e) {
+            throw new WeatherApiException("Failed to fetch cities", e);
+        }
+
+        if (geocodingResponses == null || geocodingResponses.isEmpty()) {
+            return List.of();
+        }
         return geocodingResponses.stream().map(cityMapper::toCityDto).toList();
     }
 
-    public Optional<City> xFindByNameAndCountry(String name, String country) {
+    public Optional<City> findByNameAndCountry(String name, String country) {
         return cityRepository.findByNameAndCountry(name, country);
     }
 
     @Transactional
-    public City xFindOrCreateCity(CityDto cityDto) {
+    public City findOrCreateCity(CityDto cityDto) {
         Optional<City> existingCity = cityRepository.findByNameAndCountry(
                 cityDto.getName(),
                 cityDto.getCountry());
@@ -60,50 +76,10 @@ public class CityService {
     }
 
     @Transactional
-    public City findOrCreateCity(GeocodingResponse geocodingData) {
-        Optional<City> existingCity = cityRepository.findByNameAndCountry(
-                geocodingData.getName(),
-                geocodingData.getCountry());
-
-        if (existingCity.isPresent()) {
-            return existingCity.get();
-        }
-
-        City city = new City();
-        city.setName(geocodingData.getName());
-        city.setCountry(geocodingData.getCountry());
-        city.setLatitude(BigDecimal.valueOf(geocodingData.getLatitude()));
-        city.setLongitude(BigDecimal.valueOf(geocodingData.getLongitude()));
-        city.setSearchCount(0);
-
-        return cityRepository.save(city);
-    }
-
-    public Optional<City> findByName(String name) {
-        return cityRepository.findByNameIgnoreCase(name);
-    }
-
-    
-
-    @Transactional
-    public City findOrCreateCity(String name, String country, double lat, double lon) {
-        Optional<City> existingCity = cityRepository.findByNameAndCountry(name, country);
-        if (existingCity.isPresent()) {
-            return existingCity.get();
-        }
-
-        City city = new City();
-        city.setName(name);
-        city.setCountry(country);
-        city.setLatitude(BigDecimal.valueOf(lat));
-        city.setLongitude(BigDecimal.valueOf(lon));
-        city.setSearchCount(0);
-
-        return cityRepository.save(city);
-    }
-
-    @Transactional
     public void incrementSearchCount(Long cityId) {
+        if (cityId == null) {
+            throw new CityNotFoundException(cityId);
+        }
         cityRepository.findById(cityId).ifPresent(city -> {
             city.setSearchCount(city.getSearchCount() + 1);
             city.setLastSearched(LocalDateTime.now());
@@ -112,39 +88,12 @@ public class CityService {
     }
 
     public List<City> getRecentlySearchedCities(int limit) {
+        if (limit < 1 || limit > 10) {
+            throw new BadRequestException("Limit must be between 1 and 10");
+        }
         PageRequest pageRequest = PageRequest.of(
                 0, limit, Sort.by(Sort.Direction.DESC, "lastSearched"));
         return cityRepository.findByLastSearchedIsNotNull(pageRequest);
     }
 
-    /**
-     * Find a city by ID.
-     */
-    // public Optional<City> findById(Long id) {
-    // return cityRepository.findById(id);
-    // }
-
-    /**
-     * Get cities ordered by search count (most popular first).
-     */
-    // public List<City> getMostSearchedCities(int limit) {
-    // PageRequest pageRequest = PageRequest.of(0, limit,
-    // Sort.by(Sort.Direction.DESC, "searchCount"));
-    // return cityRepository.findAll(pageRequest).getContent();
-    // }
-
-    /**
-     * Search cities by partial name (for autocomplete).
-     */
-    // public List<City> searchCities(String query) {
-    // return cityRepository.findByNameContainingIgnoreCase(query);
-    // }
-
-    /**
-     * Save a city entity.
-     */
-    // @Transactional
-    // public City save(City city) {
-    // return cityRepository.save(city);
-    // }
 }
