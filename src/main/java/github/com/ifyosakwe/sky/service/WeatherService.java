@@ -106,26 +106,6 @@ public class WeatherService {
 
     }
 
-    @Transactional
-    public void refreshWeatherData(City city) {
-        // Refresh current weather
-        WeatherResponse weatherResponse = openWeatherMapService.fetchCurrentWeather(
-                city.getLatitude().doubleValue(),
-                city.getLongitude().doubleValue());
-        CurrentWeather weather = weatherMapper.toCurrentWeather(weatherResponse, city);
-
-        Optional<CurrentWeather> existing = currentWeatherRepository.findByCityId(city.getId());
-        existing.ifPresent(cw -> weather.setId(cw.getId()));
-        currentWeatherRepository.save(weather);
-
-        // Refresh forecasts
-        ForecastResponse forecastResponse = openWeatherMapService.fetchForecast(
-                city.getLatitude().doubleValue(),
-                city.getLongitude().doubleValue());
-        forecastRepository.deleteByCityId(city.getId());
-        forecastRepository.saveAll(weatherMapper.toForecasts(forecastResponse, city));
-    }
-
     private boolean isFresh(LocalDateTime lastUpdated) {
         return lastUpdated != null && lastUpdated.isAfter(LocalDateTime.now().minusHours(2));
     }

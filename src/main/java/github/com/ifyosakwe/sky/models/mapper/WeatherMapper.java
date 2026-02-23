@@ -47,42 +47,6 @@ public class WeatherMapper {
         return weather;
     }
 
-    /*
-     * public CurrentWeather toCurrentWeather(WeatherResponse weatherResponse) {
-     * CurrentWeather weather = new CurrentWeather();
-     * weather.setCity(weatherResponse.city);
-     * weather.setTimestamp(LocalDateTime.ofInstant(Instant.ofEpochSecond(
-     * weatherResponse.dt), ZoneOffset.UTC));
-     * weather.setTemperature(weatherResponse.main.temp);
-     * weather.setHumidity(weatherResponse.main.humidity);
-     * weather.setPressure(weatherResponse.main.pressure);
-     * 
-     * if (weatherResponse.wind != null) {
-     * weather.setWindSpeed(weatherResponse.wind.speed);
-     * weather.setWindDirection(weatherResponse.wind.direction);
-     * }
-     * 
-     * if (weatherResponse.weather != null && !weatherResponse.weather.isEmpty()) {
-     * weather.setWeatherMain(weatherResponse.weather.get(0).main);
-     * weather.setWeatherDescription(weatherResponse.weather.get(0).description);
-     * }
-     * 
-     * if (weatherResponse.sys != null) {
-     * weather.setSunrise(
-     * LocalDateTime.ofInstant(Instant.ofEpochSecond(weatherResponse.sys.sunrise),
-     * ZoneOffset.UTC));
-     * weather.setSunset(
-     * LocalDateTime.ofInstant(Instant.ofEpochSecond(weatherResponse.sys.sunset),
-     * ZoneOffset.UTC));
-     * }
-     * 
-     * weather.setLastUpdated(LocalDateTime.now());
-     * 
-     * return weather;
-     * }
-     */
-
-
     public List<Forecast> toForecasts(List<ForecastItem> dtoList, City city) {
         List<Forecast> forecasts = new ArrayList<>();
         if (dtoList == null) {
@@ -115,73 +79,6 @@ public class WeatherMapper {
             forecasts.add(forecast);
         }
 
-        return forecasts;
-    }
-
-    public List<Forecast> toForecasts(ForecastResponse dto, City city) {
-        List<Forecast> forecasts = new ArrayList<>();
-
-        if (dto.list == null) {
-            return forecasts;
-        }
-
-        for (ForecastResponse.ForecastItem item : dto.list) {
-            Forecast forecast = new Forecast();
-            forecast.setCity(city);
-            forecast.setForecastDate(LocalDateTime.ofInstant(Instant.ofEpochSecond(item.dt), ZoneOffset.UTC));
-            forecast.setTemperature(item.main.temp);
-            forecast.setHumidity(item.main.humidity);
-            forecast.setPressure(item.main.pressure);
-
-            if (item.wind != null) {
-                forecast.setWindSpeed(item.wind.speed);
-                forecast.setWindDirection(item.wind.deg);
-            }
-
-            if (item.weather != null && !item.weather.isEmpty()) {
-                forecast.setWeatherMain(item.weather.get(0).main);
-                forecast.setWeatherDescription(item.weather.get(0).description);
-            }
-
-            if (item.rain != null) {
-                forecast.setRainVolume(item.rain.threeH);
-            }
-
-            forecast.setProbability(item.pop);
-
-            forecasts.add(forecast);
-        }
-
-        return forecasts;
-    }
-
-    public List<Forecast> toForecasts(List<ForecastItem> dtoList) {
-        List<Forecast> forecasts = new ArrayList<>();
-        for (ForecastItem item : dtoList) {
-            Forecast forecast = new Forecast();
-            forecast.setForecastDate(LocalDateTime.ofInstant(Instant.ofEpochSecond(item.dt), ZoneOffset.UTC));
-            forecast.setTemperature(item.main.temp);
-            forecast.setHumidity(item.main.humidity);
-            forecast.setPressure(item.main.pressure);
-
-            if (item.wind != null) {
-                forecast.setWindSpeed(item.wind.speed);
-                forecast.setWindDirection(item.wind.deg);
-            }
-
-            if (item.weather != null && !item.weather.isEmpty()) {
-                forecast.setWeatherMain(item.weather.get(0).main);
-                forecast.setWeatherDescription(item.weather.get(0).description);
-            }
-
-            if (item.rain != null) {
-                forecast.setRainVolume(item.rain.threeH);
-            }
-
-            forecast.setProbability(item.pop);
-
-            forecasts.add(forecast);
-        }
         return forecasts;
     }
 
