@@ -1,9 +1,6 @@
 package github.com.ifyosakwe.sky.service;
 
-import github.com.ifyosakwe.sky.exception.CityNotFoundException;
 import github.com.ifyosakwe.sky.models.dto.CityDto;
-import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse;
-import github.com.ifyosakwe.sky.models.dto.openweather.GeocodingResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse.ForecastItem;
 import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
@@ -14,6 +11,9 @@ import github.com.ifyosakwe.sky.models.entity.Forecast;
 import github.com.ifyosakwe.sky.models.mapper.WeatherMapper;
 import github.com.ifyosakwe.sky.repository.CurrentWeatherRepository;
 import github.com.ifyosakwe.sky.repository.ForecastRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +21,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-// TODO: Add a Scheduler to call refreshWeatherData()
-// deletes old forecasts, fetches & saves fresh ones
-// to keep data current.
-// then if (!forcastListDB.isEmpty()) {...} simplified
-
 @Service
 public class WeatherService {
+
+    private static final Logger log = LoggerFactory.getLogger(WeatherService.class);
 
     private final OpenWeatherMapService openWeatherMapService;
     private final CityService cityService;
@@ -52,8 +49,11 @@ public class WeatherService {
     public CurrentWeatherApiResponse getCurrentWeather(CityDto cityDto) {
         Optional<City> cityDB = cityService.findByNameAndCountry(
                 cityDto.getName(), cityDto.getCountry());
-        if (cityDB.isPresent() && isFresh(cityDB.get().getCurrentWeather().getLastUpdated())) {
+        if (cityDB.isPresent()
+                && cityDB.get().getCurrentWeather() != null
+                && isFresh(cityDB.get().getCurrentWeather().getLastUpdated())) {
             cityService.incrementSearchCount(cityDB.get().getId());
+            log.debug("Getting Weather from DB: {}", cityDto.getFullname());
             return weatherMapper.toCurrentWeatherResponse(cityDB.get());
         }
 
@@ -61,6 +61,7 @@ public class WeatherService {
         Optional<CurrentWeather> weatherDB = currentWeatherRepository.findByCityId(city.getId());
         if (weatherDB.isPresent() && isFresh(weatherDB.get().getLastUpdated())) {
             cityService.incrementSearchCount(city.getId());
+            log.debug("Getting Weather from DB II: {}", cityDto.getFullname());
             return weatherMapper.toCurrentWeatherResponse(weatherDB.get(), city);
         }
 
@@ -73,6 +74,7 @@ public class WeatherService {
             weather.setId(weatherDB.get().getId());
         }
         currentWeatherRepository.save(weather);
+        log.debug("Getting Weather from API: {}", cityDto.getFullname());
         return weatherMapper.toCurrentWeatherResponse(weather, city);
     }
 
@@ -84,6 +86,7 @@ public class WeatherService {
             List<Forecast> forcastListDB = forecastRepository.findByCityIdAndForecastDateAfter(
                     cityDB.get().getId(), LocalDateTime.now());
             if (!forcastListDB.isEmpty() && isFresh(forcastListDB.get(0).getForecastDate())) {
+                log.debug("Getting Forecast from DB: {}", cityDto.getFullname());
                 return forcastListDB.stream()
                         .map(weatherMapper::toForecastItemResponse)
                         .toList();
@@ -100,6 +103,7 @@ public class WeatherService {
         List<Forecast> forecastList = weatherMapper.toForecasts(forecastListAPI, city);
         forecastRepository.saveAll(forecastList);
 
+        log.debug("Getting Forecast from API: {}", cityDto.getFullname());
         return forecastList.stream()
                 .map(weatherMapper::toForecastItemResponse)
                 .toList();

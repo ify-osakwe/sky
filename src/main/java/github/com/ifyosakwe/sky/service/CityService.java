@@ -8,6 +8,9 @@ import github.com.ifyosakwe.sky.models.dto.openweather.GeocodingResponse;
 import github.com.ifyosakwe.sky.models.entity.City;
 import github.com.ifyosakwe.sky.models.mapper.CityMapper;
 import github.com.ifyosakwe.sky.repository.CityRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,8 @@ import java.util.Optional;
 
 @Service
 public class CityService {
+
+    private static final Logger log = LoggerFactory.getLogger(CityService.class);
 
     private final CityRepository cityRepository;
     private final OpenWeatherMapService openWeatherMapService;
@@ -62,6 +67,7 @@ public class CityService {
                 cityDto.getCountry());
 
         if (existingCity.isPresent()) {
+            log.debug("Getting City from DB: {}", cityDto.getFullname());
             return existingCity.get();
         }
 
@@ -71,7 +77,8 @@ public class CityService {
         city.setLatitude(BigDecimal.valueOf(cityDto.getLatitude()));
         city.setLongitude(BigDecimal.valueOf(cityDto.getLongitude()));
         city.setSearchCount(0);
-
+        
+        log.debug("Creating City: {}", cityDto.getFullname());
         return cityRepository.save(city);
     }
 

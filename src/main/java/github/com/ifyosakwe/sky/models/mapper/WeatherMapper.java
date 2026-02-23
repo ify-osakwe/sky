@@ -1,6 +1,5 @@
 package github.com.ifyosakwe.sky.models.mapper;
 
-import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse.ForecastItem;
 import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
