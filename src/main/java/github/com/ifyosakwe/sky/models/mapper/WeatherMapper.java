@@ -2,8 +2,8 @@ package github.com.ifyosakwe.sky.models.mapper;
 
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse.ForecastItem;
-import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
-import github.com.ifyosakwe.sky.models.dto.response.ForecastItemResponse;
+import github.com.ifyosakwe.sky.models.dto.skyapi.CurrentWeatherResponse;
+import github.com.ifyosakwe.sky.models.dto.skyapi.ForecastItemResponse;
 import github.com.ifyosakwe.sky.models.entity.City;
 import github.com.ifyosakwe.sky.models.entity.CurrentWeather;
 import github.com.ifyosakwe.sky.models.entity.Forecast;
@@ -81,8 +81,8 @@ public class WeatherMapper {
         return forecasts;
     }
 
-    public CurrentWeatherApiResponse toCurrentWeatherResponse(CurrentWeather weather, City city) {
-        return new CurrentWeatherApiResponse(
+    public CurrentWeatherResponse toCurrentWeatherResponse(CurrentWeather weather, City city) {
+        return new CurrentWeatherResponse(
                 city.getName(),
                 city.getCountry(),
                 weather.getTemperature(),
@@ -97,8 +97,8 @@ public class WeatherMapper {
                 weather.getLastUpdated());
     }
 
-    public CurrentWeatherApiResponse toCurrentWeatherResponse(City city) {
-        return new CurrentWeatherApiResponse(
+    public CurrentWeatherResponse toCurrentWeatherResponse(City city) {
+        return new CurrentWeatherResponse(
                 city.getName(),
                 city.getCountry(),
                 city.getCurrentWeather().getTemperature(),

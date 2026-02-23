@@ -1,7 +1,7 @@
 package github.com.ifyosakwe.sky.controller;
 
 import github.com.ifyosakwe.sky.exception.BadRequestException;
-import github.com.ifyosakwe.sky.models.dto.CityDto;
+import github.com.ifyosakwe.sky.models.dto.skyapi.CityDto;
 import github.com.ifyosakwe.sky.models.entity.City;
 import github.com.ifyosakwe.sky.service.CityService;
 import org.springframework.http.ResponseEntity;

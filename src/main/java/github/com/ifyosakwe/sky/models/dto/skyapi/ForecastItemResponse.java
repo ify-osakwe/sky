@@ -1,4 +1,4 @@
-package github.com.ifyosakwe.sky.models.dto.response;
+package github.com.ifyosakwe.sky.models.dto.skyapi;
 
 import java.time.LocalDateTime;
 

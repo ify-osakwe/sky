@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import github.com.ifyosakwe.sky.models.dto.CityDto;
-import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
-import github.com.ifyosakwe.sky.models.dto.response.ForecastItemResponse;
+import github.com.ifyosakwe.sky.models.dto.skyapi.CityDto;
+import github.com.ifyosakwe.sky.models.dto.skyapi.CurrentWeatherResponse;
+import github.com.ifyosakwe.sky.models.dto.skyapi.ForecastItemResponse;
 import github.com.ifyosakwe.sky.service.WeatherService;
 
 @RestController
@@ -24,10 +24,10 @@ public class WeatherApiController {
     }
 
     @PostMapping("/current")
-    public ResponseEntity<CurrentWeatherApiResponse> getCurrentWeather(
+    public ResponseEntity<CurrentWeatherResponse> getCurrentWeather(
             @RequestBody CityDto cityDto) {
 
-        CurrentWeatherApiResponse response = weatherService.getCurrentWeather(cityDto);
+        CurrentWeatherResponse response = weatherService.getCurrentWeather(cityDto);
         return ResponseEntity.ok(response);
     }
 

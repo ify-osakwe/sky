@@ -1,4 +1,4 @@
-package github.com.ifyosakwe.sky.models.dto;
+package github.com.ifyosakwe.sky.models.dto.skyapi;
 
 public class WeatherDto {
     private double longitude;

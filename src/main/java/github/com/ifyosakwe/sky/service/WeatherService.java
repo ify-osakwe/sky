@@ -1,10 +1,10 @@
 package github.com.ifyosakwe.sky.service;
 
-import github.com.ifyosakwe.sky.models.dto.CityDto;
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.ForecastResponse.ForecastItem;
-import github.com.ifyosakwe.sky.models.dto.response.CurrentWeatherApiResponse;
-import github.com.ifyosakwe.sky.models.dto.response.ForecastItemResponse;
+import github.com.ifyosakwe.sky.models.dto.skyapi.CityDto;
+import github.com.ifyosakwe.sky.models.dto.skyapi.CurrentWeatherResponse;
+import github.com.ifyosakwe.sky.models.dto.skyapi.ForecastItemResponse;
 import github.com.ifyosakwe.sky.models.entity.City;
 import github.com.ifyosakwe.sky.models.entity.CurrentWeather;
 import github.com.ifyosakwe.sky.models.entity.Forecast;
@@ -46,7 +46,7 @@ public class WeatherService {
     }
 
     @Transactional
-    public CurrentWeatherApiResponse getCurrentWeather(CityDto cityDto) {
+    public CurrentWeatherResponse getCurrentWeather(CityDto cityDto) {
         Optional<City> cityDB = cityService.findByNameAndCountry(
                 cityDto.getName(), cityDto.getCountry());
         if (cityDB.isPresent()

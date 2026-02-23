@@ -1,8 +1,8 @@
-package github.com.ifyosakwe.sky.models.dto.response;
+package github.com.ifyosakwe.sky.models.dto.skyapi;
 
 import java.time.LocalDateTime;
 
-public class CurrentWeatherApiResponse {
+public class CurrentWeatherResponse {
     private String cityName;
     private String country;
     private Double temperature;
@@ -16,10 +16,10 @@ public class CurrentWeatherApiResponse {
     private LocalDateTime sunset;
     private LocalDateTime lastUpdated;
 
-    public CurrentWeatherApiResponse() {
+    public CurrentWeatherResponse() {
     }
 
-    public CurrentWeatherApiResponse(String cityName, String country, Double temperature,
+    public CurrentWeatherResponse(String cityName, String country, Double temperature,
             Integer humidity, Integer pressure, Double windSpeed,
             Integer windDirection, String weatherMain,
             String weatherDescription, LocalDateTime sunrise,

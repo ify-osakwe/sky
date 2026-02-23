@@ -1,8 +1,8 @@
 package github.com.ifyosakwe.sky.models.mapper;
 
-import github.com.ifyosakwe.sky.models.dto.CityDto;
 import github.com.ifyosakwe.sky.models.dto.openweather.GeocodingResponse;
 import github.com.ifyosakwe.sky.models.dto.openweather.WeatherResponse;
+import github.com.ifyosakwe.sky.models.dto.skyapi.CityDto;
 import github.com.ifyosakwe.sky.models.entity.City;
 import org.springframework.stereotype.Component;
 
