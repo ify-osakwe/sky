@@ -39,7 +39,7 @@ public class OpenWeatherMapService {
     }
 
     public WeatherResponse fetchCurrentWeather(double lat, double lon) {
-        String url = baseUrl + "/weather?lat={lat}&lon={lon}&appid={key}";
+        String url = baseUrl + "/weather?lat={lat}&lon={lon}&appid={key}&units=metric";
         return restClient.get()
                 .uri(url, lat, lon, apiKey)
                 .retrieve()
@@ -47,7 +47,7 @@ public class OpenWeatherMapService {
     }
 
     public ForecastResponse fetchForecast(double lat, double lon) {
-        String url = baseUrl + "/forecast?lat={lat}&lon={lon}&appid={key}";
+        String url = baseUrl + "/forecast?lat={lat}&lon={lon}&appid={key}&units=metric";
         return restClient.get()
                 .uri(url, lat, lon, apiKey)
                 .retrieve()

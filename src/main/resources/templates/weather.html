@@ -14,7 +14,7 @@
 
         <!-- Current Weather -->
         <div class="card-custom mb-4">
-            <div class="temperature-display" th:text="${weather.temperature} + '°'">0°</div>
+            <div class="temperature-display" th:text="${weather.temperature} + '°C'">0°C</div>
             <div class="condition-display" th:text="${weather.weatherDescription}">Clear sky</div>
 
             <div class="row">
@@ -67,7 +67,7 @@
                     <tbody>
                         <tr th:each="item : ${forecast}">
                             <td th:text="${#temporals.format(item.forecastDate, 'yyyy-MM-dd HH:mm:ss')}">2026-01-01</td>
-                            <td th:text="${item.temperature} + '°'">0°</td>
+                            <td th:text="${item.temperature} + '°C'">0°C</td>
                             <td th:text="${item.weatherMain}">Clear</td>
                             <td th:text="${item.humidity} + '%'">0%</td>
                             <td th:text="${item.windSpeed} + ' m/s'">0 m/s</td>
