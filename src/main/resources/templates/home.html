@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Sky — Weather Dashboard')}"></head>
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <main class="container">
+        <div class="hero">
+            <h1>☁️ Sky</h1>
+            <p>Search for a city to see the current weather and forecast</p>
+        </div>
+
+        <form class="search-form" action="/search" method="get">
+            <input type="text" name="query" placeholder="Enter city name..." required>
+            <button type="submit">Search</button>
+        </form>
+
+        <div th:if="${recentCities != null and !recentCities.isEmpty()}" class="mt-5">
+            <h3 class="section-title">Recently Searched</h3>
+            <div class="row g-3">
+                <div class="col-md-4" th:each="city : ${recentCities}">
+                    <a th:href="@{/weather(name=${city.name}, country=${city.country}, lat=${city.latitude}, lon=${city.longitude})}">
+                        <div class="card-custom">
+                            <h5 th:text="${city.name}">City</h5>
+                            <p th:text="${city.country}">Country</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${recentCities == null or recentCities.isEmpty()}" class="empty-state">
+            <p>No recent searches yet. Try searching for a city above!</p>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
