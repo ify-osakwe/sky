@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface CurrentWeatherRepository extends JpaRepository<CurrentWeather, Long> {
 
     Optional<CurrentWeather> findByCityId(Long cityId);
+
+    void deleteByCityId(Long cityId);
 }

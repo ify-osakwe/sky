@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import github.com.ifyosakwe.sky.models.entity.City;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +34,12 @@ public interface CityRepository extends JpaRepository<City, Long> {
      * WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name, '%'));
      */
     List<City> findByNameContainingIgnoreCase(String name);
+
+    /**
+     * Find stale cities whose last search was before the cutoff date, or was never
+     * searched.
+     * SELECT * FROM cities
+     * WHERE last_searched < :cutoff OR last_searched IS NULL;
+     */
+    List<City> findByLastSearchedBeforeOrLastSearchedIsNull(LocalDateTime cutoff);
 }

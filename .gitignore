@@ -33,8 +33,6 @@ build/
 .vscode/
 
 ### util
-TRD.md
-PRD.md
 PLAN.md
 PLANB.md
 .env

@@ -11,6 +11,7 @@ import github.com.ifyosakwe.sky.repository.CityRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class CityService {
         this.cityMapper = cityMapper;
     }
 
+    @Cacheable(value = "citySearch", key = "#city")
     public List<CityDto> getCities(String city) {
         if (city == null || city.isBlank()) {
             throw new BadRequestException("City name cannot be empty");
@@ -77,7 +79,7 @@ public class CityService {
         city.setLatitude(BigDecimal.valueOf(cityDto.getLatitude()));
         city.setLongitude(BigDecimal.valueOf(cityDto.getLongitude()));
         city.setSearchCount(0);
-        
+
         log.debug("Creating City: {}", cityDto.getFullname());
         return cityRepository.save(city);
     }

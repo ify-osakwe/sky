@@ -14,6 +14,8 @@ import github.com.ifyosakwe.sky.repository.ForecastRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +47,7 @@ public class WeatherService {
 
     }
 
+    @Cacheable(value = "currentWeather", key = "#cityDto.name + '_' + #cityDto.country")
     @Transactional
     public CurrentWeatherResponse getCurrentWeather(CityDto cityDto) {
         Optional<City> cityDB = cityService.findByNameAndCountry(
@@ -78,6 +81,7 @@ public class WeatherService {
         return weatherMapper.toCurrentWeatherResponse(weather, city);
     }
 
+    @Cacheable(value = "forecast", key = "#cityDto.name + '_' + #cityDto.country")
     @Transactional
     public List<ForecastItemResponse> getForecast(CityDto cityDto) {
         Optional<City> cityDB = cityService.findByNameAndCountry(
@@ -108,6 +112,46 @@ public class WeatherService {
                 .map(weatherMapper::toForecastItemResponse)
                 .toList();
 
+    }
+
+    @CacheEvict(value = "currentWeather", key = "#cityDto.name + '_' + #cityDto.country")
+    @Transactional
+    public CurrentWeatherResponse refreshCurrentWeather(CityDto cityDto) {
+        log.debug("Refreshing current weather for: {}", cityDto.getName());
+
+        City city = cityService.findOrCreateCity(cityDto);
+        WeatherResponse weatherResponse = openWeatherMapService.fetchCurrentWeather(
+                cityDto.getLatitude(),
+                cityDto.getLongitude());
+        CurrentWeather weather = weatherMapper.toCurrentWeather(weatherResponse, city);
+
+        Optional<CurrentWeather> existingWeather = currentWeatherRepository.findByCityId(city.getId());
+        if (existingWeather.isPresent()) {
+            weather.setId(existingWeather.get().getId());
+        }
+        currentWeatherRepository.save(weather);
+        log.debug("Refreshed current weather from API: {}", cityDto.getName());
+        return weatherMapper.toCurrentWeatherResponse(weather, city);
+    }
+
+    @CacheEvict(value = "forecast", key = "#cityDto.name + '_' + #cityDto.country")
+    @Transactional
+    public List<ForecastItemResponse> refreshForecast(CityDto cityDto) {
+        log.debug("Refreshing forecast for: {}", cityDto.getName());
+
+        City city = cityService.findOrCreateCity(cityDto);
+        List<ForecastItem> forecastListAPI = openWeatherMapService.fetchDailyForecast(
+                cityDto.getLatitude(),
+                cityDto.getLongitude());
+
+        forecastRepository.deleteByCityId(city.getId());
+        List<Forecast> forecastList = weatherMapper.toForecasts(forecastListAPI, city);
+        forecastRepository.saveAll(forecastList);
+
+        log.debug("Refreshed forecast from API: {}", cityDto.getName());
+        return forecastList.stream()
+                .map(weatherMapper::toForecastItemResponse)
+                .toList();
     }
 
     private boolean isFresh(LocalDateTime lastUpdated) {
