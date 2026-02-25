@@ -3,8 +3,7 @@ package github.com.ifyosakwe.sky.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,17 +22,17 @@ public class WeatherApiController {
         this.weatherService = weatherService;
     }
 
-    @PostMapping("/current")
+    @GetMapping("/current")
     public ResponseEntity<CurrentWeatherResponse> getCurrentWeather(
-            @RequestBody CityDto cityDto) {
+            CityDto cityDto) {
 
         CurrentWeatherResponse response = weatherService.getCurrentWeather(cityDto);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/forecast")
+    @GetMapping("/forecast")
     public ResponseEntity<List<ForecastItemResponse>> getForecast(
-            @RequestBody CityDto cityDto) {
+            CityDto cityDto) {
 
         List<ForecastItemResponse> response = weatherService.getForecast(cityDto);
         return ResponseEntity.ok(response);

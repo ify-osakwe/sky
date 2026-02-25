@@ -69,7 +69,7 @@ public class CityService {
                 cityDto.getCountry());
 
         if (existingCity.isPresent()) {
-            log.debug("Getting City from DB: {}", cityDto.getFullname());
+            log.debug("Getting City from DB: {}, {}", cityDto.getName(), cityDto.getCountry());
             return existingCity.get();
         }
 
@@ -80,7 +80,7 @@ public class CityService {
         city.setLongitude(BigDecimal.valueOf(cityDto.getLongitude()));
         city.setSearchCount(0);
 
-        log.debug("Creating City: {}", cityDto.getFullname());
+        log.debug("Creating City: {}, {}", cityDto.getName(), cityDto.getCountry());
         return cityRepository.save(city);
     }
 

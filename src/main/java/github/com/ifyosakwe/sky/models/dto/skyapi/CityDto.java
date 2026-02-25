@@ -1,7 +1,6 @@
 package github.com.ifyosakwe.sky.models.dto.skyapi;
 
 public class CityDto {
-    private String fullname;
     private String name;
     private String state;
     private String country;
@@ -17,7 +16,6 @@ public class CityDto {
         this.country = country;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.fullname = buildFullname(name, "", country);
     }
 
     public CityDto(String name, String state, String country, double latitude,
@@ -27,26 +25,6 @@ public class CityDto {
         this.country = country;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.fullname = buildFullname(name, state, country);
-    }
-
-    private String buildFullname(String name, String state, String country) {
-        StringBuilder sb = new StringBuilder(name);
-        if (state != null && !state.isEmpty()) {
-            sb.append(", ").append(state);
-        }
-        if (country != null && !country.isEmpty()) {
-            sb.append(", ").append(country);
-        }
-        return sb.toString();
-    }
-
-    public String getFullname() {
-        return fullname;
-    }
-
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
     }
 
     public String getName() {
@@ -91,7 +69,7 @@ public class CityDto {
 
     @Override
     public String toString() {
-        return "CityDto [fullname=" + fullname + ", name=" + name + ", state=" + state
+        return "CityDto [name=" + name + ", state=" + state
                 + ", country=" + country + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }

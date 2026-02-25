@@ -56,7 +56,7 @@ public class WeatherService {
                 && cityDB.get().getCurrentWeather() != null
                 && isFresh(cityDB.get().getCurrentWeather().getLastUpdated())) {
             cityService.incrementSearchCount(cityDB.get().getId());
-            log.debug("Getting Weather from DB: {}", cityDto.getFullname());
+            log.debug("Getting Weather from DB: {}, {}", cityDto.getName(), cityDto.getCountry());
             return weatherMapper.toCurrentWeatherResponse(cityDB.get());
         }
 
@@ -64,7 +64,7 @@ public class WeatherService {
         Optional<CurrentWeather> weatherDB = currentWeatherRepository.findByCityId(city.getId());
         if (weatherDB.isPresent() && isFresh(weatherDB.get().getLastUpdated())) {
             cityService.incrementSearchCount(city.getId());
-            log.debug("Getting Weather from DB II: {}", cityDto.getFullname());
+            log.debug("Getting Weather from DB II: {}, {}", cityDto.getName(), cityDto.getCountry());
             return weatherMapper.toCurrentWeatherResponse(weatherDB.get(), city);
         }
 
@@ -77,7 +77,8 @@ public class WeatherService {
             weather.setId(weatherDB.get().getId());
         }
         currentWeatherRepository.save(weather);
-        log.debug("Getting Weather from API: {}", cityDto.getFullname());
+        log.debug("Getting Weather from API: {}, {}", cityDto.getName(), cityDto.getCountry());
+        cityService.incrementSearchCount(city.getId());
         return weatherMapper.toCurrentWeatherResponse(weather, city);
     }
 
@@ -90,7 +91,8 @@ public class WeatherService {
             List<Forecast> forcastListDB = forecastRepository.findByCityIdAndForecastDateAfter(
                     cityDB.get().getId(), LocalDateTime.now());
             if (!forcastListDB.isEmpty() && isFresh(forcastListDB.get(0).getForecastDate())) {
-                log.debug("Getting Forecast from DB: {}", cityDto.getFullname());
+                log.debug("Getting Forecast from DB: {}, {}", cityDto.getName(), cityDto.getCountry());
+                cityService.incrementSearchCount(cityDB.get().getId());
                 return forcastListDB.stream()
                         .map(weatherMapper::toForecastItemResponse)
                         .toList();
@@ -107,7 +109,7 @@ public class WeatherService {
         List<Forecast> forecastList = weatherMapper.toForecasts(forecastListAPI, city);
         forecastRepository.saveAll(forecastList);
 
-        log.debug("Getting Forecast from API: {}", cityDto.getFullname());
+        log.debug("Getting Forecast from API: {}, {}", cityDto.getName(), cityDto.getCountry());
         return forecastList.stream()
                 .map(weatherMapper::toForecastItemResponse)
                 .toList();
