@@ -4,7 +4,7 @@ services:
       context: .
       target: final
     environment:
-      - SPRING_PROFILES_ACTIVE=prod   # overrides the Dockerfile default
+      - SPRING_PROFILES_ACTIVE=prod
       - DB_URL=jdbc:postgresql://db:5432/skydb
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}

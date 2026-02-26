@@ -18,7 +18,7 @@
                 <div class="col-md-4" th:each="city : ${cities}">
                     <a th:href="@{/weather(name=${city.name}, country=${city.country}, lat=${city.latitude}, lon=${city.longitude}, state=${city.state})}">
                         <div class="card-custom">
-                            <h5 th:text="${city.fullname}">City, State, Country</h5>
+                            <h5 th:text="${city.state != null and !city.state.isEmpty()} ? ${city.name + ', ' + city.state + ', ' + city.country} : ${city.name + ', ' + city.country}">City, Country</h5>
                             <p>
                                 <span th:text="'Lat: ' + ${city.latitude}">Lat</span> ·
                                 <span th:text="'Lon: ' + ${city.longitude}">Lon</span>

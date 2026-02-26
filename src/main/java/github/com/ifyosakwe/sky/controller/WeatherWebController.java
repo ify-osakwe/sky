@@ -34,7 +34,7 @@ public class WeatherWebController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam("query") String query, Model model) {
+    public String search(@RequestParam String query, Model model) {
         List<CityDto> cities = cityService.getCities(query);
         model.addAttribute("cities", cities);
         model.addAttribute("query", query);
@@ -51,11 +51,11 @@ public class WeatherWebController {
 
     @GetMapping("/weather")
     public String weather(
-            @RequestParam("name") String name,
-            @RequestParam("country") String country,
-            @RequestParam("lat") double lat,
-            @RequestParam("lon") double lon,
-            @RequestParam(value = "state", required = false) String state,
+            @RequestParam String name,
+            @RequestParam String country,
+            @RequestParam double lat,
+            @RequestParam double lon,
+            @RequestParam(required = false) String state,
             Model model) {
         CityDto cityDto = new CityDto(name, state, country, lat, lon);
         CurrentWeatherResponse currentWeather = weatherService.getCurrentWeather(cityDto);

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Sky — ' + ${city.fullname})}"></head>
+<head th:replace="~{fragments/layout :: head('Sky — ' + (${city.state != null and !city.state.isEmpty()} ? ${city.name + ', ' + city.state + ', ' + city.country} : ${city.name + ', ' + city.country}))}"></head>
 
 <body>
     <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
     <main class="container">
         <div class="weather-header">
-            <h2 th:text="${city.fullname}">City Name</h2>
-            <p th:text="'Last updated: ' + ${weather.lastUpdated}">Last updated</p>
+            <h2 th:text="${city.state != null and !city.state.isEmpty()} ? ${city.name + ', ' + city.state + ', ' + city.country} : ${city.name + ', ' + city.country}">City Name</h2>
+            <p th:text="'Last updated: ' + ${#temporals.format(weather.lastUpdated, 'MMM dd, yyyy HH:mm')}">Last updated</p>
         </div>
 
         <!-- Current Weather -->
@@ -38,11 +38,11 @@
 
             <div class="row mt-3">
                 <div class="col-6 weather-stat">
-                    <span class="value" th:text="${weather.sunrise}">06:00</span>
+                    <span class="value" th:text="${#temporals.format(weather.sunrise, 'MMM dd, yyyy HH:mm:ss')}">06:00</span>
                     <span class="label">Sunrise</span>
                 </div>
                 <div class="col-6 weather-stat">
-                    <span class="value" th:text="${weather.sunset}">18:00</span>
+                    <span class="value" th:text="${#temporals.format(weather.sunset, 'MMM dd, yyyy HH:mm:ss')}">18:00</span>
                     <span class="label">Sunset</span>
                 </div>
             </div>
