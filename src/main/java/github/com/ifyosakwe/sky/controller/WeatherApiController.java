@@ -2,6 +2,8 @@ package github.com.ifyosakwe.sky.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import github.com.ifyosakwe.sky.models.dto.skyapi.CurrentWeatherResponse;
 import github.com.ifyosakwe.sky.models.dto.skyapi.ForecastItemResponse;
 import github.com.ifyosakwe.sky.service.WeatherService;
 
+@Tag(name="Weather")
 @RestController
 @RequestMapping("/api/weather")
 public class WeatherApiController {
@@ -22,6 +25,7 @@ public class WeatherApiController {
         this.weatherService = weatherService;
     }
 
+    @Operation(summary = "Get the current weather for a City")
     @GetMapping("/current")
     public ResponseEntity<CurrentWeatherResponse> getCurrentWeather(
             CityDto cityDto) {
@@ -30,6 +34,7 @@ public class WeatherApiController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get the 5-day forecast for a City")
     @GetMapping("/forecast")
     public ResponseEntity<List<ForecastItemResponse>> getForecast(
             CityDto cityDto) {
