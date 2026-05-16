@@ -1,8 +1,8 @@
 name: Scheduled Shutdown
 on:
   schedule:
-    - cron: '0 0 * * *'  # 12 midnight UTC: Shut down
-    - cron: '0 11 * * *'  # 5 AM UTC: Start up
+    - cron: '0 2 * * *'  # 12 midnight UTC: Shut down
+    - cron: '0 13 * * *'  # 5 AM UTC: Start up
 
 jobs:
   manage-service:
@@ -15,7 +15,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          if [ "$(date +%H)" -eq "00" ]; then
+          if [ "$(date +%H)" -eq "02" ]; then
             railway down --service sky --yes
           else
             railway up --service sky --detach
