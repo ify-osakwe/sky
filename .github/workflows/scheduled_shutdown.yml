@@ -1,22 +1,49 @@
 name: Scheduled Shutdown
 on:
   schedule:
-    - cron: '0 2 * * *'  # 12 midnight UTC: Shut down
-    - cron: '0 13 * * *'  # 5 AM UTC: Start up
+    - cron: '0 9 * * *'   # 9 AM UTC: Trigger Shut down
+    - cron: '0 21 * * *'  # 9 PM UTC: Trigger Start up (21:00)
+  workflow_dispatch:      # Allows you to manually test right now from GitHub UI
+    inputs:
+      action:
+        description: 'Manually test action'
+        required: true
+        default: 'scale-down'
+        type: choice
+        options:
+          - scale-down
+          - scale-up
 
 jobs:
-  manage-service:
+  toggle-service:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-      - name: Stop/Start Service
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Determine Target Replicas
+        id: determine_replicas
         run: |
-          if [ "$(date +%H)" -eq "02" ]; then
-            railway down --service sky --yes
-          else
-            railway up --service sky --detach
+          # Default to 1 replica (Service UP)
+          REPLICAS=1
+          
+          # If triggered by the 9 AM cron OR a manual 'scale-down' selection
+          if [ "${{ github.event.schedule }}" = "0 9 * * *" ] || [ "${{ github.event.inputs.action }}" = "scale-down" ]; then
+            REPLICAS=0
           fi
+          
+          echo "replicas=$REPLICAS" >> $GITHUB_OUTPUT
+
+      - name: Toggle Railway Service via GraphQL API
+        run: |
+          curl --request POST \
+            --url https://backboard.railway.com/graphql/v2 \
+            --header 'Authorization: Bearer ${{ secrets.RAILWAY_PROJECTS_TOKEN }}' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "query": "mutation serviceInstanceUpdate($serviceId: String!, $environmentId: String!, $input: ServiceInstanceUpdateInput!) { serviceInstanceUpdate(serviceId: $serviceId, environmentId: $environmentId, input: $input) }",
+              "variables": {
+                "serviceId": "${{ secrets.RAILWAY_SERVICE_ID }}",
+                "environmentId": "${{ secrets.RAILWAY_ENVIRONMENT_ID }}",
+                "input": {
+                  "numReplicas": ${{ steps.determine_replicas.outputs.replicas }}
+                }
+              }
+            }'
