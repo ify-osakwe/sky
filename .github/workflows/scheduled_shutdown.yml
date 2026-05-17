@@ -1,8 +1,8 @@
 name: Scheduled Shutdown
 on:
   schedule:
-    - cron: '0 9 * * *'   # 9 AM UTC: Trigger Shut down
-    - cron: '0 21 * * *'  # 9 PM UTC: Trigger Start up (21:00)
+    - cron: '0 21 * * *'   # Trigger Shut down in UTC
+    - cron: '0 9 * * *'  # Trigger Start up in UTC
   workflow_dispatch:      # Allows you to manually test right now from GitHub UI
     inputs:
       action:
