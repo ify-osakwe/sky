@@ -25,7 +25,7 @@ jobs:
           REPLICAS=1
           
           # If triggered by the 9 AM cron OR a manual 'scale-down' selection
-          if [ "${{ github.event.schedule }}" = "0 9 * * *" ] || [ "${{ github.event.inputs.action }}" = "scale-down" ]; then
+          if [ "${{ github.event.schedule }}" = "0 21 * * *" ] || [ "${{ github.event.inputs.action }}" = "scale-down" ]; then
             REPLICAS=0
           fi
           
