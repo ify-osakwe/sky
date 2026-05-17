@@ -1,7 +1,7 @@
 name: Scheduled Shutdown
 on:
   schedule:
-    - cron: '0 21 * * *'   # Trigger Shut down in UTC
+    - cron: '0 18 * * *'   # Trigger Shut down in UTC
     - cron: '0 9 * * *'  # Trigger Start up in UTC
   workflow_dispatch:      # Allows you to manually test right now from GitHub UI
     inputs:
@@ -24,8 +24,8 @@ jobs:
           # Default to 1 replica (Service UP)
           REPLICAS=1
           
-          # If triggered by the 9 AM cron OR a manual 'scale-down' selection
-          if [ "${{ github.event.schedule }}" = "0 21 * * *" ] || [ "${{ github.event.inputs.action }}" = "scale-down" ]; then
+          # If triggered by the shutdown cron OR a manual 'scale-down' selection
+          if [ "${{ github.event.schedule }}" = "0 18 * * *" ] || [ "${{ github.event.inputs.action }}" = "scale-down" ]; then
             REPLICAS=0
           fi
           
